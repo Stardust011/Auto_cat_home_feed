@@ -35,7 +35,14 @@ extern "C" {
 extern UART_HandleTypeDef huart1;
 
 /* USER CODE BEGIN Private defines */
-
+#define USART_REC_LEN  200                  //定义最大接收字节数 200
+ 
+extern uint8_t temp;
+ 
+extern uint8_t  USART_RX_BUF[USART_REC_LEN];//接收缓冲
+extern uint16_t USART_RX_STA;         			//接收状态
+ 
+extern uint8_t aRxBuffer[1];			          //HAL库USART接收Buffer
 /* USER CODE END Private defines */
 
 void MX_USART1_UART_Init(void);

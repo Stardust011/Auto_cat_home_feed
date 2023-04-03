@@ -21,6 +21,17 @@
 #include "usart.h"
 
 /* USER CODE BEGIN 0 */
+#include <stdio.h>
+
+uint8_t aRxBuffer[1];
+ 
+uint8_t temp=0;
+uint8_t USART_RX_BUF[USART_REC_LEN];   //接收缓冲
+//接收状态位
+//bit15接收完成标志
+//bit14接收了0x0d
+//bit13~0接收到的有效字节数目
+uint16_t USART_RX_STA=0;//接收状态
 
 /* USER CODE END 0 */
 

@@ -228,5 +228,5 @@ void EXTI15_10_IRQHandler(void)
 }
 
 /* USER CODE BEGIN 1 */
-
+#include <exitCallBack.h>
 /* USER CODE END 1 */
