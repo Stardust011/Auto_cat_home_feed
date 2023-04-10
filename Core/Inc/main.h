@@ -42,6 +42,8 @@ extern "C" {
 /* Exported constants --------------------------------------------------------*/
 /* USER CODE BEGIN EC */
 extern SPI_HandleTypeDef hspi1;
+extern TIM_HandleTypeDef htim1;
+extern TIM_HandleTypeDef htim2;
 /* USER CODE END EC */
 
 /* Exported macro ------------------------------------------------------------*/
@@ -57,6 +59,10 @@ void Error_Handler(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
+#define FEED_EM_C_Pin GPIO_PIN_0
+#define FEED_EM_C_GPIO_Port GPIOA
+#define LITTER_EM_C_Pin GPIO_PIN_1
+#define LITTER_EM_C_GPIO_Port GPIOA
 #define OLED_RES_Pin GPIO_PIN_3
 #define OLED_RES_GPIO_Port GPIOA
 #define OLED_DC_Pin GPIO_PIN_4
