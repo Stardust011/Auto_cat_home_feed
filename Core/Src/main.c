@@ -98,19 +98,18 @@ int main(void)
   // 连接电源指示
   HAL_GPIO_WritePin(LED_R_GPIO_Port, LED_R_Pin, GPIO_PIN_SET);
   // 初始化OLED
+  // 必须设置为Full-Duplex Master 或 Transmit Only Master
   ssd1306_Init();
-  ssd1306_Fill(White);
-  ssd1306_UpdateScreen();
-  // show_start_screen();
-  // // 初始化PWM
-  // HAL_TIM_Base_Start(&htim1);
-  // HAL_TIM_Base_Start_IT(&htim1);
-  // HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1);
-  // HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_2);
-  // // 初始化串口
-  // HAL_UART_Receive_IT(&huart1, (uint8_t *)&aRxBuffer, 1);
+  show_start_screen();
+  // 初始化PWM
+  HAL_TIM_Base_Start(&htim1);
+  HAL_TIM_Base_Start_IT(&htim1);
+  HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1);
+  HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_2);
+  // 初始化串口
+  HAL_UART_Receive_IT(&huart1, (uint8_t *)&aRxBuffer, 1);
 
-  // //完成初始化指示
+  //完成初始化指示
   HAL_GPIO_WritePin(LED_R_GPIO_Port, LED_R_Pin, GPIO_PIN_RESET);
   HAL_GPIO_WritePin(LED_G_GPIO_Port, LED_G_Pin, GPIO_PIN_SET);
   /* USER CODE END 2 */
@@ -122,6 +121,7 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
+
   }
   /* USER CODE END 3 */
 }

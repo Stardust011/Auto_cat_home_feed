@@ -5,5 +5,6 @@
 #include <ssd1306.h>
 
 void show_start_screen(void);
+void show_ready_screen(void);
 
 #endif
