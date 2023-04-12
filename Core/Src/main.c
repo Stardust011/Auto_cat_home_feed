@@ -25,9 +25,11 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include <stdio.h>
-#include <ssd1306.h>
-#include <mylib.h>
+#include <stdio.h> //标准库
+#include <ssd1306.h> //ssd1306 oled
+#include <mylib.h> //自定义库
+#include <exitCallBack.h> //回调函数库
+
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -59,7 +61,16 @@ void SystemClock_Config(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-
+//调用自己的中断回调函数
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim){
+  MY_HAL_TIM_PeriodElapsedCallback(htim);
+}
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
+  MY_HAL_GPIO_EXTI_Callback(GPIO_Pin);
+};
+void HAL_TIM_PWM_PulseFinishedCallback(TIM_HandleTypeDef *htim){
+  MY_HAL_TIM_PWM_PulseFinishedCallback(htim);
+}
 /* USER CODE END 0 */
 
 /**
@@ -94,24 +105,34 @@ int main(void)
   MX_TIM1_Init();
   MX_USART1_UART_Init();
   MX_TIM2_Init();
+  MX_TIM3_Init();
   /* USER CODE BEGIN 2 */
   // 连接电源指示
   HAL_GPIO_WritePin(LED_R_GPIO_Port, LED_R_Pin, GPIO_PIN_SET);
   // 初始化OLED
   // 必须设置为Full-Duplex Master 或 Transmit Only Master
   ssd1306_Init();
-  show_start_screen();
+
   // 初始化PWM
   HAL_TIM_Base_Start(&htim1);
-  HAL_TIM_Base_Start_IT(&htim1);
-  HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1);
-  HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_2);
+  HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1); //猫砂
+  // HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_2); //存粮
+
+  HAL_TIM_Base_Start(&htim3);
+  HAL_TIM_Base_Start_IT(&htim3);
+  // HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_1); //FEED
+
+  // 初始化定时器
+  // HAL_TIM_Base_Start(&htim2);
+  HAL_TIM_Base_Start_IT(&htim2);
+
   // 初始化串口
   HAL_UART_Receive_IT(&huart1, (uint8_t *)&aRxBuffer, 1);
 
   //完成初始化指示
+  show_start_screen();
   HAL_GPIO_WritePin(LED_R_GPIO_Port, LED_R_Pin, GPIO_PIN_RESET);
-  HAL_GPIO_WritePin(LED_G_GPIO_Port, LED_G_Pin, GPIO_PIN_SET);
+  // HAL_GPIO_WritePin(LED_G_GPIO_Port, LED_G_Pin, GPIO_PIN_SET);
   /* USER CODE END 2 */
 
   /* Infinite loop */

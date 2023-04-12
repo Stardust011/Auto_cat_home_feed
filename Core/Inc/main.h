@@ -44,6 +44,7 @@ extern "C" {
 extern SPI_HandleTypeDef hspi1;
 extern TIM_HandleTypeDef htim1;
 extern TIM_HandleTypeDef htim2;
+extern TIM_HandleTypeDef htim3;
 /* USER CODE END EC */
 
 /* Exported macro ------------------------------------------------------------*/
@@ -81,6 +82,8 @@ void Error_Handler(void);
 #define RESET_BUTTON_Pin GPIO_PIN_13
 #define RESET_BUTTON_GPIO_Port GPIOB
 #define RESET_BUTTON_EXTI_IRQn EXTI15_10_IRQn
+#define ROTATION_Pin GPIO_PIN_5
+#define ROTATION_GPIO_Port GPIOB
 
 /* USER CODE BEGIN Private defines */
 
