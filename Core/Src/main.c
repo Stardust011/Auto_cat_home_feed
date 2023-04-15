@@ -116,7 +116,7 @@ int main(void)
   // 初始化PWM
   HAL_TIM_Base_Start(&htim1);
   HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1); //猫砂
-  // HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_2); //存粮
+  HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_2); //存粮
 
   HAL_TIM_Base_Start(&htim3);
   HAL_TIM_Base_Start_IT(&htim3);
@@ -132,7 +132,9 @@ int main(void)
   //完成初始化指示
   show_start_screen();
   HAL_GPIO_WritePin(LED_R_GPIO_Port, LED_R_Pin, GPIO_PIN_RESET);
-  // HAL_GPIO_WritePin(LED_G_GPIO_Port, LED_G_Pin, GPIO_PIN_SET);
+  HAL_GPIO_WritePin(LED_G_GPIO_Port, LED_G_Pin, GPIO_PIN_SET);
+
+  HAL_TIM_Base_Stop_IT(&htim2); //关闭定时器
   /* USER CODE END 2 */
 
   /* Infinite loop */

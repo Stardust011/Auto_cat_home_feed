@@ -10,6 +10,6 @@ void show_ready_screen(void);
 int start_feed(void);
 int start_add_feed(void);
 
-void stop_feed_all(void);
+void stop_feed(void);
 
 #endif

@@ -24,19 +24,30 @@ void set_feed_speed(int speed)
     TIM3->PSC = speed;
 }
 
+void start_clean(void)
+{
+    //开启TIM1-CH1 PWM
+    HAL_GPIO_WritePin(LITTER_EM_C_GPIO_Port, LITTER_EM_C_Pin, ClockWise);
+    HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1);
+}
+
 int start_feed(void)
 {
     HAL_GPIO_WritePin(ROTATION_GPIO_Port, ROTATION_Pin, ClockWise);
-
+    //开启TIM3-CH1 PWM
     HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_1);
     HAL_TIM_PWM_Start_IT(&htim3, TIM_CHANNEL_1);
-    return 100; //脉冲数
+    //开启TIM2中断
+    HAL_TIM_Base_Start_IT(&htim2);
+    return 100; // 脉冲数
 }
 
-void stop_feed_all(void)
+void stop_feed(void)
 {
     HAL_TIM_PWM_Stop(&htim3, TIM_CHANNEL_1);
     HAL_TIM_PWM_Stop_IT(&htim3, TIM_CHANNEL_1);
+
+    HAL_TIM_Base_Start_IT(&htim2);
 }
 
 int start_add_feed(void)
@@ -44,5 +55,5 @@ int start_add_feed(void)
     HAL_GPIO_WritePin(ROTATION_GPIO_Port, ROTATION_Pin, CounterClockWise);
     HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_1);
     HAL_TIM_PWM_Start_IT(&htim3, TIM_CHANNEL_1);
-    return 100000; //脉冲数
+    return 100000; // 脉冲数
 }
