@@ -57,3 +57,11 @@ int start_add_feed(void)
     HAL_TIM_PWM_Start_IT(&htim3, TIM_CHANNEL_1);
     return 100000; // 脉冲数
 }
+
+// 输出接收字符
+void show_buffer(uint8_t Buffer[1]){
+  ssd1306_Fill(Black);
+  ssd1306_SetCursor(0, 0);
+  ssd1306_WriteString(Buffer, Font_11x18, White);
+  ssd1306_UpdateScreen();
+}

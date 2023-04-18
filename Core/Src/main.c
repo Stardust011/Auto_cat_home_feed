@@ -71,6 +71,25 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
 void HAL_TIM_PWM_PulseFinishedCallback(TIM_HandleTypeDef *htim){
   MY_HAL_TIM_PWM_PulseFinishedCallback(htim);
 }
+
+// USART中断回调函数
+static int count = 0;
+static char usart_message[1];
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart){
+  count++;
+  if (count == 1)
+  {
+    usart_message[0] = aRxBuffer;
+    HAL_UART_Receive_IT(&huart1, (uint8_t *)&aRxBuffer, 1);
+    return;
+  }
+  else{
+    usart_message[1] = aRxBuffer;
+    count = 0;
+    HAL_UART_Receive_IT(&huart1, (uint8_t *)&aRxBuffer, 1);
+    show_buffer(usart_message);
+  }
+}
 /* USER CODE END 0 */
 
 /**

@@ -12,4 +12,6 @@ int start_add_feed(void);
 
 void stop_feed(void);
 
+void show_buffer(uint8_t Buffer[1]);
+
 #endif

@@ -98,3 +98,16 @@ void MY_HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
     }
   }
 }
+
+// USART中断回调函数
+
+void MY_HAL_UART_RxCpltCallback(uint8_t Buffer[1]){
+if (Buffer[0] == '0x01'){
+  count_FEED = start_feed();
+  //屏幕输出
+  ssd1306_Fill(Black);
+  ssd1306_SetCursor(0, 19);
+  ssd1306_WriteString("Feeding.", Font_11x18, White);
+  ssd1306_UpdateScreen();
+}
+}
