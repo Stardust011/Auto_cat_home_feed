@@ -76,7 +76,7 @@ void MY_HAL_TIM_PWM_PulseFinishedCallback(TIM_HandleTypeDef *htim)
 
 // 定时器中断回调函数
 static char flag = 1;
-int count = 100;
+int count = FEED;
 void MY_HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
   if (htim == &htim2)
@@ -84,17 +84,19 @@ void MY_HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
     count--;
     if (count == 0)
     {
-      if (flag == 0)
-      {
-        HAL_TIM_PWM_Stop(&htim1, TIM_CHANNEL_1);
-      }
-      else
-      {
-        HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1);
-      }
-      HAL_GPIO_WritePin(LED_B_GPIO_Port, LED_B_Pin, flag);
-      flag = !flag;
-      count = 100;
+      // if (flag == 0)
+      // {
+      //   HAL_TIM_PWM_Stop(&htim1, TIM_CHANNEL_1);
+      // }
+      // else
+      // {
+      //   HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1);
+      // }
+      // HAL_GPIO_WritePin(LED_B_GPIO_Port, LED_B_Pin, flag);
+      // flag = !flag;
+      // count = 100;
+      stop_feed();
+      off_all_led();
     }
   }
 }

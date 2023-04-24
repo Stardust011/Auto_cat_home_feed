@@ -1,20 +1,20 @@
 /* USER CODE BEGIN Header */
 /**
-  ******************************************************************************
-  * @file           : main.c
-  * @brief          : Main program body
-  ******************************************************************************
-  * @attention
-  *
-  * Copyright (c) 2023 STMicroelectronics.
-  * All rights reserved.
-  *
-  * This software is licensed under terms that can be found in the LICENSE file
-  * in the root directory of this software component.
-  * If no LICENSE file comes with this software, it is provided AS-IS.
-  *
-  ******************************************************************************
-  */
+ ******************************************************************************
+ * @file           : main.c
+ * @brief          : Main program body
+ ******************************************************************************
+ * @attention
+ *
+ * Copyright (c) 2023 STMicroelectronics.
+ * All rights reserved.
+ *
+ * This software is licensed under terms that can be found in the LICENSE file
+ * in the root directory of this software component.
+ * If no LICENSE file comes with this software, it is provided AS-IS.
+ *
+ ******************************************************************************
+ */
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
@@ -25,9 +25,9 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include <stdio.h> //标准库
-#include <ssd1306.h> //ssd1306 oled
-#include <mylib.h> //自定义库
+#include <stdio.h>        //标准库
+#include <ssd1306.h>      //ssd1306 oled
+#include <mylib.h>        //自定义库
 #include <exitCallBack.h> //回调函数库
 
 /* USER CODE END Includes */
@@ -61,41 +61,77 @@ void SystemClock_Config(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-//调用自己的中断回调函数
-void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim){
+// 调用自己的中断回调函数
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
+{
   MY_HAL_TIM_PeriodElapsedCallback(htim);
 }
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
-  MY_HAL_GPIO_EXTI_Callback(GPIO_Pin);
+    // MY_HAL_GPIO_EXTI_Callback(GPIO_Pin);
 };
-void HAL_TIM_PWM_PulseFinishedCallback(TIM_HandleTypeDef *htim){
+void HAL_TIM_PWM_PulseFinishedCallback(TIM_HandleTypeDef *htim)
+{
   MY_HAL_TIM_PWM_PulseFinishedCallback(htim);
 }
 
 // USART中断回调函数
-static int count = 0;
-static char usart_message[1];
-void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart){
-  count++;
-  if (count == 1)
+// static int count = 0;
+static uint8_t recv_buf[1] = {0};
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
+{
+  // count++;
+  // if (count == 1)
+  // {
+  //   usart_message[0] = aRxBuffer;
+  //   HAL_UART_Receive_IT(&huart1, (uint8_t *)&aRxBuffer, 1);
+  //   return;
+  // }
+  // else{
+  //   usart_message[1] = aRxBuffer;
+  //   count = 0;
+  //   HAL_UART_Receive_IT(&huart1, (uint8_t *)&aRxBuffer, 1);
+  //   show_buffer(usart_message);
+  // }
+  if (huart->Instance == USART1)
   {
-    usart_message[0] = aRxBuffer;
-    HAL_UART_Receive_IT(&huart1, (uint8_t *)&aRxBuffer, 1);
-    return;
+    // 将接收到的数据发送
+    //  HAL_UART_Transmit_IT(huart, (uint8_t*)recv_buf, 13);
+
+    if (recv_buf[0] == 0x30) //接受0x30
+    {
+      off_all_led(); //关闭所有LED
+    }
+    else if (recv_buf[0] == 0x31) //接受0x31
+    {
+      start_clean(); //启动清理机构
+      HAL_GPIO_WritePin(LED_R_GPIO_Port, LED_R_Pin, GPIO_PIN_SET);
+    }
+    else if (recv_buf[0] == 0x32) //接受0x32
+    {
+      HAL_GPIO_WritePin(LED_G_GPIO_Port, LED_G_Pin, GPIO_PIN_SET);
+      start_feed();
+    }
+    else if (recv_buf[0] == 0x33) //接受0x33
+    {
+      HAL_GPIO_WritePin(LED_B_GPIO_Port, LED_B_Pin, GPIO_PIN_SET);
+      start_add_feed(); 
+    }
+    else
+    {
+      // HAL_GPIO_WritePin(LED_B_GPIO_Port, LED_B_Pin, GPIO_PIN_SET);
+      show_ready_screen();
+    }
+    
   }
-  else{
-    usart_message[1] = aRxBuffer;
-    count = 0;
-    HAL_UART_Receive_IT(&huart1, (uint8_t *)&aRxBuffer, 1);
-    show_buffer(usart_message);
-  }
+  // 重新使能串口接收中断
+  HAL_UART_Receive_IT(huart, (uint8_t *)recv_buf, 1);
 }
 /* USER CODE END 0 */
 
 /**
-  * @brief  The application entry point.
-  * @retval int
-  */
+ * @brief  The application entry point.
+ * @retval int
+ */
 int main(void)
 {
   /* USER CODE BEGIN 1 */
@@ -134,8 +170,8 @@ int main(void)
 
   // 初始化PWM
   HAL_TIM_Base_Start(&htim1);
-  HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1); //猫砂
-  HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_2); //存粮
+  HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1); // 猫砂
+  HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_2); // 存粮
 
   HAL_TIM_Base_Start(&htim3);
   HAL_TIM_Base_Start_IT(&htim3);
@@ -145,15 +181,15 @@ int main(void)
   // HAL_TIM_Base_Start(&htim2);
   HAL_TIM_Base_Start_IT(&htim2);
 
-  // 初始化串口
+  // 串口监听开始
   HAL_UART_Receive_IT(&huart1, (uint8_t *)&aRxBuffer, 1);
 
-  //完成初始化指示
+  // 完成初始化指示
   show_start_screen();
   HAL_GPIO_WritePin(LED_R_GPIO_Port, LED_R_Pin, GPIO_PIN_RESET);
   HAL_GPIO_WritePin(LED_G_GPIO_Port, LED_G_Pin, GPIO_PIN_SET);
 
-  HAL_TIM_Base_Stop_IT(&htim2); //关闭定时器
+  HAL_TIM_Base_Stop_IT(&htim2); // 关闭定时器
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -163,28 +199,27 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-
   }
   /* USER CODE END 3 */
 }
 
 /**
-  * @brief System Clock Configuration
-  * @retval None
-  */
+ * @brief System Clock Configuration
+ * @retval None
+ */
 void SystemClock_Config(void)
 {
   RCC_OscInitTypeDef RCC_OscInitStruct = {0};
   RCC_ClkInitTypeDef RCC_ClkInitStruct = {0};
 
   /** Configure the main internal regulator output voltage
-  */
+   */
   __HAL_RCC_PWR_CLK_ENABLE();
   __HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE1);
 
   /** Initializes the RCC Oscillators according to the specified parameters
-  * in the RCC_OscInitTypeDef structure.
-  */
+   * in the RCC_OscInitTypeDef structure.
+   */
   RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI;
   RCC_OscInitStruct.HSIState = RCC_HSI_ON;
   RCC_OscInitStruct.HSICalibrationValue = RCC_HSICALIBRATION_DEFAULT;
@@ -200,9 +235,8 @@ void SystemClock_Config(void)
   }
 
   /** Initializes the CPU, AHB and APB buses clocks
-  */
-  RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK
-                              |RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2;
+   */
+  RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK | RCC_CLOCKTYPE_SYSCLK | RCC_CLOCKTYPE_PCLK1 | RCC_CLOCKTYPE_PCLK2;
   RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
   RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
   RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV2;
@@ -219,9 +253,9 @@ void SystemClock_Config(void)
 /* USER CODE END 4 */
 
 /**
-  * @brief  This function is executed in case of error occurrence.
-  * @retval None
-  */
+ * @brief  This function is executed in case of error occurrence.
+ * @retval None
+ */
 void Error_Handler(void)
 {
   /* USER CODE BEGIN Error_Handler_Debug */
@@ -233,14 +267,14 @@ void Error_Handler(void)
   /* USER CODE END Error_Handler_Debug */
 }
 
-#ifdef  USE_FULL_ASSERT
+#ifdef USE_FULL_ASSERT
 /**
-  * @brief  Reports the name of the source file and the source line number
-  *         where the assert_param error has occurred.
-  * @param  file: pointer to the source file name
-  * @param  line: assert_param error line source number
-  * @retval None
-  */
+ * @brief  Reports the name of the source file and the source line number
+ *         where the assert_param error has occurred.
+ * @param  file: pointer to the source file name
+ * @param  line: assert_param error line source number
+ * @retval None
+ */
 void assert_failed(uint8_t *file, uint32_t line)
 {
   /* USER CODE BEGIN 6 */
